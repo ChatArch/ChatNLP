@@ -5,43 +5,54 @@
     <a href="https://github.com/ChatArch/ChatNLP/actions/workflows/ci.yml">
         <img src="https://github.com/ChatArch/ChatNLP/actions/workflows/ci.yml/badge.svg" alt="Tests" />
     </a>
+    <a href="https://arch.gh.wzhecnu.cn/ChatNLP/">
+        <img src="https://img.shields.io/badge/docs-mkdocs-blue.svg" alt="Documentation" />
+    </a>
 </div>
 
 <div align="center">
 
-[English](README.en.md) | [简体中文](README.md)
+English | [简体中文](README.md)
 </div>
 
 # ChatNLP
 
-ChatNLP: ChatArch placeholder package for NLP workflows.
+`ChatNLP` is the ChatArch Python CLI package shell for NLP-oriented workflows. The public CLI currently exposes truthful root-level package information entries only. Future NLP capabilities must update Python APIs, the CLI tree, docs, and tests together.
 
 ## Quick Start
 
 ```bash
-pip install -e ".[dev]"
-chatnlp --help
+pip install ChatNLP
 chatnlp --version
+chatnlp --tree
+```
+
+Development environment:
+
+```bash
+pip install -e ".[dev,docs]"
 python -m pytest -q
+mkdocs build --strict
 python -m build
 ```
 
-## CLI Contract
+## CLI Tree
 
-This template depends on `chatstyle>=0.1.0,<0.2.0` and `chatenv>=0.2.0,<0.3.0`. New commands should prefer:
+```text
+chatnlp  # ChatNLP placeholder package for NLP workflows
+├── --help  # show command help
+├── --version  # show the installed package version
+└── --tree  # show this CLI tree
+```
 
-- `CommandSchema` / `CommandField` for inputs.
-- `add_interactive_option()` for the shared `-i/-I` switch.
-- `resolve_command_inputs()` for missing args, defaults, TTY behavior, and validation.
-- Generate `config.py` and a `chatenv.configs` entry point by default so the package is ChatEnv-discoverable; use `--without-chatenv-provider` only when ChatEnv integration is intentionally not needed.
+`chatnlp hello` is not public CLI; it is a scaffold example leftover and must fail.
 
-## Layout
+## Documentation
 
-- `src/`: package source code
-- `tests/code-tests/`: code tests and migrated historical tests
-- `tests/cli-tests/`: real CLI tests, doc-first
-- `tests/mock-cli-tests/`: mock/fake CLI tests, doc-first
+- Documentation home: https://arch.gh.wzhecnu.cn/ChatNLP/
+- CLI tree: https://arch.gh.wzhecnu.cn/ChatNLP/cli-tree/
+- English docs: https://arch.gh.wzhecnu.cn/ChatNLP/en/
 
 ## Development Notes
 
-See `DEVELOP.md` and `AGENTS.md` before expanding the scaffold.
+Read `DEVELOP.md` and `AGENTS.md` before expanding commands, and keep `--tree`, README, MkDocs, tests, and changelog synchronized.
