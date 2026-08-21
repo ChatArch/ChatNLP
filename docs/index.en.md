@@ -8,7 +8,7 @@
 
     ---
 
-    Inspect the current real command surface: [`chatnlp --tree`](cli-tree.md).
+    Inspect the current real command surface with [`chatnlp --tree`](cli-tree.md), or use `chatnlp --tree-brief` for the signature-free view.
 
 -   :material-package-variant: **Package Boundary**
 
@@ -20,7 +20,7 @@
 
     ---
 
-    `--tree`, README, MkDocs, and tests must stay synchronized.
+    `--tree`, `--tree-brief`, README, MkDocs, and tests must stay synchronized.
 
 </div>
 
@@ -30,6 +30,7 @@
 pip install ChatNLP
 chatnlp --version
 chatnlp --tree
+chatnlp --tree-brief
 ```
 
 ## Development Verification

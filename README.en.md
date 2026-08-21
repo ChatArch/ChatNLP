@@ -25,6 +25,7 @@ English | [简体中文](README.md)
 pip install ChatNLP
 chatnlp --version
 chatnlp --tree
+chatnlp --tree-brief
 ```
 
 Development environment:
@@ -38,11 +39,14 @@ python -m build
 
 ## CLI Tree
 
+Shared ChatStyle runtime generates `chatnlp --tree` and `chatnlp --tree-brief` from the registered Click surface. The full view preserves command signatures, while the brief view omits them. Both show the same nodes while the CLI remains root-only.
+
 ```text
-chatnlp  # ChatNLP placeholder package for NLP workflows
-├── --help  # show command help
-├── --version  # show the installed package version
-└── --tree  # show this CLI tree
+chatnlp
+├── --help  # Show this message and exit.
+├── --version  # Show the version and exit.
+├── --tree  # Print the registered CLI tree and exit.
+└── --tree-brief  # Print the registered CLI tree without parameter signatures and exit.
 ```
 
 `chatnlp hello` is not public CLI; it is a scaffold example leftover and must fail.
@@ -55,4 +59,4 @@ chatnlp  # ChatNLP placeholder package for NLP workflows
 
 ## Development Notes
 
-Read `DEVELOP.md` and `AGENTS.md` before expanding commands, and keep `--tree`, README, MkDocs, tests, and changelog synchronized.
+Read `DEVELOP.md` and `AGENTS.md` before expanding commands, and keep `--tree`, `--tree-brief`, README, MkDocs, tests, and changelog synchronized.

@@ -1,7 +1,18 @@
+import click
 from click.testing import CliRunner
+from chatstyle import add_tree_option
 
 from chatnlp import __version__
 from chatnlp.cli import main
+
+
+def test_help_mentions_full_and_brief_trees_and_no_scaffold_hello():
+    result = CliRunner().invoke(main, ["--help"])
+
+    assert result.exit_code == 0
+    assert "--tree" in result.output
+    assert "--tree-brief" in result.output
+    assert "hello" not in result.output.lower()
 
 
 def test_version_option_reports_package_version():
@@ -11,23 +22,48 @@ def test_version_option_reports_package_version():
     assert f"chatnlp, version {__version__}" in result.output
 
 
-def test_top_level_help_exposes_tree_and_not_scaffold_hello():
-    result = CliRunner().invoke(main, ["--help"])
-
-    assert result.exit_code == 0
-    assert "--tree" in result.output
-    assert "hello" not in result.output.lower()
-
-
-def test_tree_option_renders_truthful_root_only_surface():
+def test_tree_reports_registered_root_only_surface():
     result = CliRunner().invoke(main, ["--tree"])
 
     assert result.exit_code == 0
-    assert "chatnlp  # ChatNLP placeholder package for NLP workflows" in result.output
-    assert "├── --help  # show command help" in result.output
-    assert "├── --version  # show the installed package version" in result.output
-    assert "└── --tree  # show this CLI tree" in result.output
+    assert result.output == (
+        "chatnlp\n"
+        "├── --help  # Show this message and exit.\n"
+        "├── --version  # Show the version and exit.\n"
+        "├── --tree  # Print the registered CLI tree and exit.\n"
+        "└── --tree-brief  # Print the registered CLI tree without parameter signatures and exit.\n"
+    )
+    assert result.output.splitlines().count("chatnlp") == 1
     assert "hello" not in result.output.lower()
+
+
+def test_tree_brief_reports_the_same_root_only_nodes():
+    full = CliRunner().invoke(main, ["--tree"])
+    brief = CliRunner().invoke(main, ["--tree-brief"])
+
+    assert brief.exit_code == 0
+    assert brief.output == full.output
+    assert brief.output.splitlines().count("chatnlp") == 1
+
+
+def test_tree_brief_omits_registered_command_signatures():
+    @click.group(name="sample")
+    @add_tree_option(renderer_options={"root_name": "sample"})
+    def sample() -> None:
+        """Sample commands."""
+
+    @sample.command()
+    @click.argument("text")
+    def inspect(text: str) -> None:
+        """Inspect text; read-only text output."""
+
+    full = CliRunner().invoke(sample, ["--tree"])
+    brief = CliRunner().invoke(sample, ["--tree-brief"])
+
+    assert full.exit_code == brief.exit_code == 0
+    assert "inspect <TEXT>" in full.output
+    assert "inspect  # Inspect text; read-only text output." in brief.output
+    assert "<TEXT>" not in brief.output
 
 
 def test_scaffold_hello_command_is_not_public():
