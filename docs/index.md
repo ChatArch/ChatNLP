@@ -8,7 +8,7 @@
 
     ---
 
-    查看当前真实命令面：[`chatnlp --tree`](cli-tree.md)。
+    查看当前真实命令面：[`chatnlp --tree`](cli-tree.md)；使用 `chatnlp --tree-brief` 获取省略参数签名的简洁视图。
 
 -   :material-package-variant: **包边界**
 
@@ -20,7 +20,7 @@
 
     ---
 
-    `--tree`、README、MkDocs 和测试必须同步更新。
+    `--tree`、`--tree-brief`、README、MkDocs 和测试必须同步更新。
 
 </div>
 
@@ -30,6 +30,7 @@
 pip install ChatNLP
 chatnlp --version
 chatnlp --tree
+chatnlp --tree-brief
 ```
 
 ## 开发验证

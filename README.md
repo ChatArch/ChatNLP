@@ -25,6 +25,7 @@
 pip install ChatNLP
 chatnlp --version
 chatnlp --tree
+chatnlp --tree-brief
 ```
 
 开发环境：
@@ -38,11 +39,14 @@ python -m build
 
 ## CLI 树
 
+`chatnlp --tree` 与 `chatnlp --tree-brief` 由共享的 ChatStyle runtime 从真实 Click 注册面生成。完整视图保留命令参数签名，简洁视图省略参数签名；当前 CLI 是 root-only，因此两者显示相同节点。
+
 ```text
-chatnlp  # ChatNLP placeholder package for NLP workflows
-├── --help  # show command help
-├── --version  # show the installed package version
-└── --tree  # show this CLI tree
+chatnlp
+├── --help  # Show this message and exit.
+├── --version  # Show the version and exit.
+├── --tree  # Print the registered CLI tree and exit.
+└── --tree-brief  # Print the registered CLI tree without parameter signatures and exit.
 ```
 
 `chatnlp hello` 不是公开 CLI；它属于脚手架示例残留，必须失败。
@@ -55,4 +59,4 @@ chatnlp  # ChatNLP placeholder package for NLP workflows
 
 ## 开发说明
 
-扩展命令前先阅读 `DEVELOP.md` 和 `AGENTS.md`，并保持 `--tree`、README、MkDocs、测试与 changelog 同步。
+扩展命令前先阅读 `DEVELOP.md` 和 `AGENTS.md`，并保持 `--tree`、`--tree-brief`、README、MkDocs、测试与 changelog 同步。

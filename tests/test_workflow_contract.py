@@ -1,6 +1,36 @@
 from pathlib import Path
 
+from chatstyle import render_click_tree
+
+from chatnlp.cli import main
+from chatnlp.config import ChatnlpConfig
+
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _text_blocks(path: Path) -> list[str]:
+    text = path.read_text(encoding="utf-8")
+    return [chunk.split("```", 1)[0].rstrip() for chunk in text.split("```text\n")[1:]]
+
+
+def test_runtime_docs_and_chatenv_registration_contract():
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+
+    assert '"click>=8.0,<9.0"' in pyproject
+    assert '"chatstyle>=0.2.0,<0.3.0"' in pyproject
+    assert '"chatenv>=0.2.10,<0.3.0"' in pyproject
+    assert '"mkdocs-material>=9.5,<9.7"' in pyproject
+    assert '[project.entry-points."chatenv.configs"]' in pyproject
+    assert 'chatnlp = "chatnlp.config"' in pyproject
+
+
+def test_chatenv_schema_uses_typed_storage_paths_and_marks_secrets():
+    env_root = ROOT / ".contract-envs"
+
+    assert ChatnlpConfig.get_storage_dir(env_root) == env_root / "Chatnlp"
+    assert ChatnlpConfig.get_active_env_file(env_root) == env_root / "Chatnlp" / ".env"
+    assert ChatnlpConfig.get_profile_env_file(env_root, "demo") == env_root / "Chatnlp" / "demo.env"
+    assert ChatnlpConfig.CHATNLP_API_KEY.is_sensitive is True
 
 
 def test_publish_workflow_is_tag_only_oidc_and_main_guarded():
@@ -29,6 +59,19 @@ def test_docs_workflows_use_chatarch_site_url():
     assert "mkdocs build --strict" in ci
 
 
+def test_ci_checks_installed_full_and_brief_trees_distributions_and_profiles():
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+
+    assert 'python-version: ["3.10", "3.11", "3.12"]' in workflow
+    assert "chatnlp --version" in workflow
+    assert "chatnlp --tree" in workflow
+    assert "chatnlp --tree-brief" in workflow
+    assert "python -m build" in workflow
+    assert "python -m twine check dist/*" in workflow
+    assert '"$RUNNER_TEMP/chatnlp-wheel/bin/python" -m pip install dist/*.whl' in workflow
+    assert '"$RUNNER_TEMP/chatnlp-wheel/bin/chatenv"' in workflow
+
+
 def test_mkdocs_material_renderer_and_public_domain():
     config = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
 
@@ -37,3 +80,30 @@ def test_mkdocs_material_renderer_and_public_domain():
     assert "material.extensions.emoji.twemoji" in config
     assert "material.extensions.emoji.to_svg" in config
     assert "cli-tree.md" in config
+
+
+def test_public_docs_expose_full_and_brief_tree_commands():
+    checked = [
+        ROOT / "README.md",
+        ROOT / "README.en.md",
+        ROOT / "docs" / "index.md",
+        ROOT / "docs" / "index.en.md",
+        ROOT / "docs" / "cli-tree.md",
+        ROOT / "docs" / "cli-tree.en.md",
+    ]
+    for path in checked:
+        text = path.read_text(encoding="utf-8")
+        assert "chatnlp --tree" in text, path
+        assert "chatnlp --tree-brief" in text, path
+
+
+def test_bilingual_cli_tree_docs_match_registered_full_and_brief_trees():
+    expected = [
+        render_click_tree(main, root_name="chatnlp"),
+        render_click_tree(main, root_name="chatnlp", brief=True),
+    ]
+
+    for path in (ROOT / "docs" / "cli-tree.md", ROOT / "docs" / "cli-tree.en.md"):
+        text = path.read_text(encoding="utf-8")
+        assert "chatstyle.add_tree_option()" in text
+        assert _text_blocks(path)[:2] == expected
